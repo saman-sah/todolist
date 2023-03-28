@@ -6,6 +6,7 @@
         <textarea name="task_short_desciption" id="task_short_desciption" cols="30" rows="10" v-model="task_short_desciption"></textarea>
         <button id="addbutton" @click="addTask" >Add Task</button>
         <hr>
+        <!-- Task Component -->
         <task-component :taskItems="taskItems" />
       </section>
       <section class="section content-section">
@@ -19,6 +20,7 @@
         </nav>  
         
         <hr>
+        <!-- List Component -->
         <list-component  />
       </section>
     </div>
