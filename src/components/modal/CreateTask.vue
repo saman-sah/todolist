@@ -10,13 +10,16 @@
         <input type="color" v-model="newTask.task_background_color" id="colorPicker_task-bg">
         <!-- <hr> -->
         <!-- <input type="date" id="select_date_to_done" name="select_date_to_done"> -->
-        <button id="addbutton" @click="addTask()" >Add Task</button>
+        <button id="addbutton" @click="actionTask()" >{{ action_button }}</button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+    props: [
+        'update_task_item'
+    ],
     data() {
         return {
             newTask:{
@@ -25,21 +28,38 @@ export default {
                 task_title_color:'#000000',
                 task_background_color:'#cccccc',
                 task_description_color:'#000000',
-            }            
+            },
+            action_button: 'Create'           
+        }
+    },
+    mounted() {
+        
+        if(this.update_task_item != null) {
+            console.log('this.update_task_item');
+        console.log(this.update_task_item);
+            this.action_button= 'Update'
+            this.newTask= this.update_task_item.task;
+        }else {
+            this.action_button= 'Create'
         }
     },
     methods: {
-        addTask(){
-            // If task is empty, return alert with message "Please write a task"
-            if(this.newTask.task_title=='') {
-                this.$toast.open({ 
-                message: 'Enter your task title', 
-                type: 'warning', 
-                position: 'bottom' 
-                }); 
+        actionTask(){
+            if(this.action_button== 'Create'){
+                // If task is empty, return alert with message "Please write a task"
+                if(this.newTask.task_title=='') {
+                    this.$toast.open({ 
+                    message: 'Enter your task title', 
+                    type: 'warning', 
+                    position: 'bottom' 
+                    }); 
+                }else {
+                    this.$parent.addTask(this.newTask);
+                }
             }else {
-                this.$parent.addTask(this.newTask);
+                this.$parent.updateTask(this.newTask, this.update_task_item.index);
             }
+
         }
     },
 }

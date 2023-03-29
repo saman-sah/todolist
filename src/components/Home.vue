@@ -10,7 +10,10 @@
         
         <hr>
         <!-- Task Component -->
-        <task-component :taskItems="taskItems" />
+        <task-component 
+        :taskItems="taskItems" 
+        @showModalUpdateTask="showModalUpdateTask($event)"
+        />
       </section>
       <section class="section content-section">
         <nav class="nav-hearder-board">
@@ -28,8 +31,9 @@
       </section>
     </div>
     <create-task-modal v-if="modal_add_task"
+    :update_task_item="update_task_item"
     @addTask="addTask($event)"
-    @closeModal="modal_add_task= !modal_add_task"
+    @closeModal="closeModal()"
     />
   </div>
 </template>
@@ -44,6 +48,7 @@ export default {
       taskItems:[],
       modal_add_task: false,
       task_component: 0,
+      update_task_item: null
     }
   },
   components: {
@@ -53,6 +58,7 @@ export default {
   },
   mounted() {
     this.taskItems= this.getTaskItems();
+    console.log(this.taskItems);
   },
   methods: {
     createNewList() {
@@ -65,11 +71,11 @@ export default {
         // const currentDate = new Date(); 
         // console.log(currentDate);
         this.taskItems.push({ 
-          title: newTask.task_title,
-          short_description: newTask.task_desciption,
-          title_color: newTask.task_title_color,
-          background_color: newTask.task_background_color,
-          description_color: newTask.task_description_color,
+          task_title: newTask.task_title,
+          task_desciption: newTask.task_desciption,
+          task_title_color: newTask.task_title_color,
+          task_background_color: newTask.task_background_color,
+          task_description_color: newTask.task_description_color,
           colorPickerDialog: false,
           // date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
           // time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
@@ -77,7 +83,7 @@ export default {
           done: false,
         });
         localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
-
+        this.modal_add_task = !this.modal_add_task;
         this.$toast.open({ 
           message: 'Your task added', 
           type: 'success', 
@@ -96,10 +102,16 @@ export default {
       {
           console.log('Discard');
           console.log(index);
-      }
-      
-      
-      
+      }      
+    },
+    showModalUpdateTask(task) {
+      this.update_task_item= task;
+      this.modal_add_task = !this.modal_add_task;    
+    },
+    updateTask(task, index) {
+      this.taskItems[index] = task;
+      localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
+      this.modal_add_task = !this.modal_add_task;
     },
     // Initialisation of data
     getTaskItems() {
@@ -112,6 +124,10 @@ export default {
       // Refresh page
       location.reload();
     },
+    closeModal() {
+      this.update_task_item= null;
+      this.modal_add_task = !this.modal_add_task;
+    }
   },
 }
 </script>
