@@ -1,9 +1,13 @@
 <template>
-  <div class="home">
-    <button @click="clearHistory">Clear All </button>
+  <div class="home" id="todolist">
+    
     <div class="container todo-list-wrapper">
       <section class="section sidebar-section">
-        <button id="addbutton" @click="modal_add_task= !modal_add_task" >Add Task</button>
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="addbutton" @click="modal_add_task= !modal_add_task" >Add Task</button>
+          <button class="btn btn-secondary" @click="clearHistory">Clear All Tasks</button>
+        </div>
+        
         <hr>
         <!-- Task Component -->
         <task-component :taskItems="taskItems" />
@@ -54,12 +58,12 @@ export default {
     createNewList() {
     },
     // Adding tasks to the list
-    // If task is empty, return alert with message "Please write a task"
+    
     addTask(newTask) {
       console.log('add task Home');
       console.log(newTask);
-        const currentDate = new Date(); 
-        console.log(currentDate);
+        // const currentDate = new Date(); 
+        // console.log(currentDate);
         this.taskItems.push({ 
           title: newTask.task_title,
           short_description: newTask.task_desciption,
@@ -67,8 +71,8 @@ export default {
           background_color: newTask.task_background_color,
           description_color: newTask.task_description_color,
           colorPickerDialog: false,
-          date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
-          time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
+          // date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
+          // time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
           status: "to do", 
           done: false,
         });
@@ -81,10 +85,21 @@ export default {
         }); 
       
     },
-    // Deleting tasks from the list and from de LocalStorage
+    // Deleting tasks 
     deleteTask(index) {
-      this.taskList.splice(index, 1);
-      this.saveData(this.taskList);
+      if (window.confirm('Are you sure to delete this task?'))
+      {
+          this.taskItems.splice(index, 1);
+          localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
+      }
+      else
+      {
+          console.log('Discard');
+          console.log(index);
+      }
+      
+      
+      
     },
     // Initialisation of data
     getTaskItems() {
@@ -93,9 +108,9 @@ export default {
     },
     clearHistory() {
       // Réinitialiser le LocalStorage
-    localStorage.clear();
-    // Refresh page
-    location.reload();
+      localStorage.clear();
+      // Refresh page
+      location.reload();
     },
   },
 }
@@ -110,6 +125,15 @@ export default {
 .home hr {
   margin: 0.5em 0;
 }
+#todolist .btn-primary {
+  background-color: #e62020;
+  border: none;
+}
+#todolist .btn-secondary {
+  background-color: #dcfc3c;
+  border: none;
+  color: #545454;
+}
 
 
 
@@ -121,10 +145,14 @@ export default {
   margin-top: 0.5em;
   text-align: left;
 }
-.task-nav {
+.task-nav,
+.action-buttons {
   display: flex; 
   justify-content: space-between;
-} 
+}
+.action-buttons button {
+  width: 45%;
+}
 
 
 
@@ -142,7 +170,7 @@ export default {
   }
   .section {
     margin: 10px;
-    padding: 10px;
+    padding: 1em;
     border: 1px solid black;
     border-radius: 8px;
   }

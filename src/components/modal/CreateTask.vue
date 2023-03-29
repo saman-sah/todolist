@@ -8,6 +8,8 @@
         <input type="color" v-model="newTask.task_description_color" id="colorPicker_task-description">
         <hr>
         <input type="color" v-model="newTask.task_background_color" id="colorPicker_task-bg">
+        <!-- <hr> -->
+        <!-- <input type="date" id="select_date_to_done" name="select_date_to_done"> -->
         <button id="addbutton" @click="addTask()" >Add Task</button>
     </div>
   </div>
@@ -28,6 +30,7 @@ export default {
     },
     methods: {
         addTask(){
+            // If task is empty, return alert with message "Please write a task"
             if(this.newTask.task_title=='') {
                 this.$toast.open({ 
                 message: 'Enter your task title', 
