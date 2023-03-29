@@ -1,10 +1,9 @@
 <template>
   <div class="home">
+    <button @click="clearHistory">Clear All </button>
     <div class="container todo-list-wrapper">
       <section class="section sidebar-section">
-        <input type="text" placeholder="Enter your task here" ref="input_title_task" v-model="task_title">
-        <textarea name="task_short_desciption" id="task_short_desciption" cols="30" rows="10" v-model="task_short_desciption"></textarea>
-        <button id="addbutton" @click="addTask" >Add Task</button>
+        <button id="addbutton" @click="modal_add_task= !modal_add_task" >Add Task</button>
         <hr>
         <task-component :taskItems="taskItems" />
       </section>
@@ -22,30 +21,29 @@
         <list-component  />
       </section>
     </div>
+    <create-task-modal v-if="modal_add_task"
+    @addTask="addTask($event)"
+    @closeModal="modal_add_task= !modal_add_task"
+    />
   </div>
 </template>
 
 <script>
 import Task from './partial/Task.vue'
 import List from './partial/List.vue'
+import CreateTaskModal from './modal/CreateTask.vue'
 export default {
   data() {
     return {
-      // Task Data
       taskItems:[],
-      task_title: '',
-      task_short_desciption:'',
-      title_color:'',
-      background_color:'',
-      short_description_color:''
-
-
-      // List Data
+      modal_add_task: false,
+      task_component: 0,
     }
   },
   components: {
     'task-component': Task,
     'list-component': List,
+    'create-task-modal': CreateTaskModal,
   },
   mounted() {
     this.taskItems= this.getTaskItems();
@@ -53,52 +51,49 @@ export default {
   methods: {
     createNewList() {
     },
-    addTask() {
-      console.log('task wrapper');
-      if(this.task_title=='') {
-        this.$toast.open({ 
-          message: 'Enter your task title', 
-          type: 'warning', 
-          position: 'bottom' 
-        }); 
-      }else {
-
+    // Adding tasks to the list
+    // If task is empty, return alert with message "Please write a task"
+    addTask(newTask) {
+      console.log('add task Home');
+      console.log(newTask);
         const currentDate = new Date(); 
         console.log(currentDate);
-        this.taskItems.push({ title: this.task_title,
-          short_description: this.task_short_desciption,
-          done: false,
-          title_color: this.title_color,
+        this.taskItems.push({ 
+          title: newTask.task_title,
+          short_description: newTask.task_desciption,
+          title_color: newTask.task_title_color,
+          background_color: newTask.task_background_color,
+          description_color: newTask.task_description_color,
           colorPickerDialog: false,
-          status: "to do", 
           date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
-          time: `${currentDate.getHours()}:${currentDate.getMinutes()}` // get time format o:m
+          time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
+          status: "to do", 
+          done: false,
         });
-        this.task_title = '';
-        this.task_short_desciption = '';
-        // console.log('JSON.stringify(this.taskItems)');
-        // console.log(this.taskItems);
-        // console.log(JSON.stringify(this.taskItems));
-        // var data=JSON.stringify(this.taskItems);
-        
-        // console.log(JSON.parse(data));
         localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
-
-
-
 
         this.$toast.open({ 
           message: 'Your task added', 
           type: 'success', 
           position: 'bottom' 
         }); 
-      }
       
+    },
+    // Deleting tasks from the list and from de LocalStorage
+    deleteTask(index) {
+      this.taskList.splice(index, 1);
+      this.saveData(this.taskList);
     },
     // Initialisation of data
     getTaskItems() {
       const data = localStorage.getItem('todo-List');
       return JSON.parse(data) || [];
+    },
+    clearHistory() {
+      // Réinitialiser le LocalStorage
+    localStorage.clear();
+    // Refresh page
+    location.reload();
     },
   },
 }
