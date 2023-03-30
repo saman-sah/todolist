@@ -2,15 +2,14 @@
 
   <div class="home" id="todolist">
     <header class="header-todo-list">
-      <nav>Logo</nav>
-      <div class="btn-clear-all">Clear All</div>
+      <nav class="action-buttons">
+          <button class="btn btn-primary" id="addbutton" @click="modal_add_task= !modal_add_task" >Add Task</button>
+          <button class="btn btn-secondary" @click="clearHistory">Clear All Tasks</button>
+      </nav>
     </header>
     <div class="todo-list-wrapper">
       <section class="section content-section">
-        <nav class="action-buttons">
-          <button class="btn btn-primary" id="addbutton" @click="modal_add_task= !modal_add_task" >Add Task</button>
-          <button class="btn btn-secondary" @click="clearHistory">Clear All Tasks</button>
-        </nav>
+        <nav><h4>TO DO in Long Time</h4></nav>   
         <hr>
       </section>
 
@@ -225,9 +224,14 @@ export default {
 .action-buttons {
   display: flex; 
   justify-content: space-between;
+  width: 100%;
+  align-items: center;
 }
 .action-buttons button {
-  width: 45%;
+  /* width: 45%; */
+  padding:1em 4em;
+  display: flex;
+  align-items: center;
 }
 
 
