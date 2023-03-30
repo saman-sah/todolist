@@ -1,35 +1,54 @@
 <template>
+
   <div class="home" id="todolist">
-    
-    <div class="container todo-list-wrapper">
-      <section class="section sidebar-section">
-        <div class="action-buttons">
+    <header class="header-todo-list">
+      <nav>Logo</nav>
+      <div class="btn-clear-all">Clear All</div>
+    </header>
+    <div class="todo-list-wrapper">
+      <section class="section content-section">
+        <nav class="action-buttons">
           <button class="btn btn-primary" id="addbutton" @click="modal_add_task= !modal_add_task" >Add Task</button>
           <button class="btn btn-secondary" @click="clearHistory">Clear All Tasks</button>
-        </div>
-        
+        </nav>
         <hr>
+      </section>
+
+
+      <section class="section content-section drop-zone" @drop="onDrop($event, 1)" @dragenter.prevent @dragover.prevent>
+        <nav><h4>TO DO</h4></nav>      
+        <hr>
+
         <!-- Task Component -->
         <task-component 
-        :taskItems="taskItems" 
+        :taskItems="dataItems(1)" 
         @showModalUpdateTask="showModalUpdateTask($event)"
         />
       </section>
-      <section class="section content-section">
-        <nav class="nav-hearder-board">
-          <div class="nav-left">
-            Board
-          </div>
-          <div class="nav-right">
-            <div class="btn-add-list" @click="createNewList">+ Add another list</div>
-          </div>
-        </nav>  
-        
+
+
+      <section class="section content-section drop-zone" @drop="onDrop($event, 2)" @dragenter.prevent @dragover.prevent>
+        <nav><h4>IN PROGRESS</h4></nav>
         <hr>
-        <!-- List Component -->
-        <list-component  />
+
+        <task-component 
+        :taskItems="dataItems(2)" 
+        @showModalUpdateTask="showModalUpdateTask($event)"
+        />
+      </section>
+
+
+      <section class="section content-section drop-zone"  @drop="onDrop($event, 3)" @dragenter.prevent @dragover.prevent>
+        <nav><h4>Done</h4></nav>  
+        <hr>
+
+        <task-component 
+        :taskItems="dataItems(3)" 
+        @showModalUpdateTask="showModalUpdateTask($event)"
+        />
       </section>
     </div>
+    
     <create-task-modal v-if="modal_add_task"
     :update_task_item="update_task_item"
     @addTask="addTask($event)"
@@ -48,7 +67,10 @@ export default {
       taskItems:[],
       modal_add_task: false,
       task_component: 0,
-      update_task_item: null
+      update_task_item: null,
+      todoTaskItems:[],
+      inprogressTaskItems:[],
+      doneTaskItems:[],
     }
   },
   components: {
@@ -56,15 +78,48 @@ export default {
     'list-component': List,
     'create-task-modal': CreateTaskModal,
   },
+  computed: {
+    
+  },
   mounted() {
     this.taskItems= this.getTaskItems();
-    console.log(this.taskItems);
+    var id= 0;
+    if(this.taskItems) {
+      this.taskItems.forEach(element => {
+        id++
+        element.task_id = id
+      });
+    }
+    
   },
   methods: {
-    createNewList() {
+    dataItems(status) {
+      return this.taskItems.filter((item) => item.status == status)
     },
-    // Adding tasks to the list
-    
+    startDrag(evt, item) {
+      console.log(item);
+      evt.dataTransfer.dropEffect = 'move'
+      evt.dataTransfer.effectAllowed = 'move'
+      evt.dataTransfer.setData('itemID', item.task_id)
+    },
+    onDrop(evt, list) {
+      const itemID = evt.dataTransfer.getData('itemID')
+      let item = null;
+      let indexItem= null;
+      this.taskItems.find((el, index) => {
+        if(el.task_id == itemID){
+          item=el;
+          indexItem= index
+        }
+      })
+      item.status = list;
+      console.log('el');
+      console.log(item);
+      console.log(indexItem);
+      this.updateTask(item, indexItem)
+    },
+
+    // Adding tasks to the list    
     addTask(newTask) {
       console.log('add task Home');
       console.log(newTask);
@@ -79,7 +134,7 @@ export default {
           colorPickerDialog: false,
           // date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
           // time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
-          status: "to do", 
+          status: 1, 
           done: false,
         });
         localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
@@ -104,6 +159,7 @@ export default {
           console.log(index);
       }      
     },
+    
     showModalUpdateTask(task) {
       this.update_task_item= task;
       this.modal_add_task = !this.modal_add_task;    
@@ -111,7 +167,7 @@ export default {
     updateTask(task, index) {
       this.taskItems[index] = task;
       localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
-      this.modal_add_task = !this.modal_add_task;
+      this.modal_add_task = false;
     },
     // Initialisation of data
     getTaskItems() {
@@ -140,6 +196,10 @@ export default {
 }
 .home hr {
   margin: 0.5em 0;
+}
+#todolist button {
+  font-size: 14px;
+  max-height: 38px;
 }
 #todolist .btn-primary {
   background-color: #e62020;
@@ -173,7 +233,9 @@ export default {
 
 
 
-
+.content-section > nav {
+  height: 40px;
+}
 .nav-hearder-board {
   display: flex;
   justify-content: space-between;
@@ -190,15 +252,23 @@ export default {
     border: 1px solid black;
     border-radius: 8px;
   }
-  .sidebar-section {
-    flex-basis: 25%;
-  }
   .content-section {
+    flex-basis: 20%;
+  }
+  /* .board-section {
     flex-basis: 70%;
     overflow: auto;
+  } */
+  .header-todo-list {
+    display: flex;
+    justify-content: space-between;
+    background: #cccccc2d;
+    padding: 1em;
+    border-radius: 0.5em;
+    min-height: 70px;
+    align-items: center;width: 83%;
+    margin: auto;
   }
-
-
 
   .lists-section {
     display: flex;
