@@ -76,7 +76,6 @@ export default {
       modal_add_task: false,
       task_component: 0,
       update_task_item: null,
-      
     }
   },
   components: {
@@ -165,7 +164,7 @@ export default {
     updateTask(task, index) {
       this.taskItems[index] = task;
       localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
-      this.modal_add_task = false;
+      this.closeModal();
       this.taskItems= this.getTaskItems();
     },
     // Init data
