@@ -1,0 +1,17 @@
+@font-face {
+    font-family: Poppins-Regular; 
+    src:url("../fonts/Poppins-Regular.ttf") ; 
+}
+body {
+  font-family: Poppins-Regular !important;
+  /* background-image: url('../img/bg.jpg'); */
+  background-image: url('../img/bg.jpg');
+  padding-top: 2em;
+}
+@font-face {
+    font-family: Poppins-Bold;
+    src:url("../fonts/Poppins-Bold.ttf") ;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: Poppins-Bold !important;
+}

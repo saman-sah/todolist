@@ -8,17 +8,20 @@
       </nav>
     </header>
     <div class="todo-list-wrapper">
-      <section class="section content-section">
+      <!-- <section class="section content-section">
         <nav><h4>TO DO in Long Time</h4></nav>   
         <hr>
-      </section>
+      </section> -->
 
 
       <section class="section content-section drop-zone" 
       @drop="onDrop($event, 1)" 
       @dragenter.prevent 
       @dragover.prevent>
-        <nav><h4>TO DO</h4></nav>      
+        <nav>
+          <img src="@/assets/img/todolist.png" alt="">
+          <h4>TO DO</h4>
+        </nav>      
         <hr>
 
         <!-- Task Component -->
@@ -103,9 +106,6 @@ export default {
       let item = null;
       let indexItem= null;
       this.taskItems.find((el, index) => {
-        console.log('forech');
-        console.log(el);
-        console.log(index);
         if(el.task_id == itemID){
           item=el;
           indexItem= index
@@ -180,7 +180,7 @@ export default {
     },
     closeModal() {
       this.update_task_item= null;
-      this.modal_add_task = !this.modal_add_task;
+      this.modal_add_task = false;
     }
   },
 }
@@ -194,6 +194,8 @@ export default {
 }
 .home hr {
   margin: 0.5em 0;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000
 }
 #todolist button {
   font-size: 14px;
@@ -252,21 +254,33 @@ export default {
   .section {
     margin: 10px;
     padding: 1em;
-    border: 1px solid black;
+    border: 1px solid rgb(210, 204, 204);
     border-radius: 1em;
+    background: #fcfcfc5c;
   }
   .content-section {
-    flex-basis: 20%;
+    flex-basis: 27%;
+  }
+  .content-section nav h4{
+    color: #000;
+    text-shadow: 2px 1px 3px #fff;
+    font-size: 32px;
+  }
+  .content-section nav {
+    display: flex;
+    gap: 1em;
   }
   .header-todo-list {
     display: flex;
     justify-content: space-between;
-    background: #cccccc2d;
+    background: #fcfcfc5c;
     padding: 1em;
     border-radius: 1em;
     min-height: 70px;
-    align-items: center;width: 83%;
+    align-items: center;
+    width: 83%;
     margin: auto;
+    border: 1px solid rgb(210, 204, 204);
   }
 
   .lists-section {
