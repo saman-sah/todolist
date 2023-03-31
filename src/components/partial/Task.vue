@@ -2,7 +2,7 @@
     <div class="tasks-section">
         <template v-for="(task, index) in taskItems" :key="index">
             <div :style="{backgroundColor: task.task_background_color}" class="task-item drag-el" 
-            @dragstart="$parent.startDrag($event, task)" draggable="true">
+            @dragstart="$parent.startDrag($event, task, index)" draggable="true">
                 <nav class="task-nav">
                     <h5 :style="{color: task.task_title_color}">{{ task.task_title }}</h5>
                     <div>
