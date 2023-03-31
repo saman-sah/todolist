@@ -14,7 +14,10 @@
       </section>
 
 
-      <section class="section content-section drop-zone" @drop="onDrop($event, 1)" @dragenter.prevent @dragover.prevent>
+      <section class="section content-section drop-zone" 
+      @drop="onDrop($event, 1)" 
+      @dragenter.prevent 
+      @dragover.prevent>
         <nav><h4>TO DO</h4></nav>      
         <hr>
 
@@ -26,7 +29,10 @@
       </section>
 
 
-      <section class="section content-section drop-zone" @drop="onDrop($event, 2)" @dragenter.prevent @dragover.prevent>
+      <section class="section content-section drop-zone" 
+      @drop="onDrop($event, 2)" 
+      @dragenter.prevent 
+      @dragover.prevent>
         <nav><h4>IN PROGRESS</h4></nav>
         <hr>
 
@@ -37,7 +43,10 @@
       </section>
 
 
-      <section class="section content-section drop-zone"  @drop="onDrop($event, 3)" @dragenter.prevent @dragover.prevent>
+      <section class="section content-section drop-zone"  
+      @drop="onDrop($event, 3)" 
+      @dragenter.prevent 
+      @dragover.prevent>
         <nav><h4>Done</h4></nav>  
         <hr>
 
@@ -67,9 +76,7 @@ export default {
       modal_add_task: false,
       task_component: 0,
       update_task_item: null,
-      todoTaskItems:[],
-      inprogressTaskItems:[],
-      doneTaskItems:[],
+      
     }
   },
   components: {
@@ -81,22 +88,14 @@ export default {
     
   },
   mounted() {
-    this.taskItems= this.getTaskItems();
-    var id= 0;
-    if(this.taskItems) {
-      this.taskItems.forEach(element => {
-        id++
-        element.task_id = id
-      });
-    }
+    this.taskItems= this.getTaskItems();    
     
   },
   methods: {
     dataItems(status) {
       return this.taskItems.filter((item) => item.status == status)
     },
-    startDrag(evt, item) {
-      console.log(item);
+    startDrag(evt, item, index) {      
       evt.dataTransfer.dropEffect = 'move'
       evt.dataTransfer.effectAllowed = 'move'
       evt.dataTransfer.setData('itemID', item.task_id)
@@ -106,15 +105,17 @@ export default {
       let item = null;
       let indexItem= null;
       this.taskItems.find((el, index) => {
+        console.log('forech');
+        console.log(el);
+        console.log(index);
         if(el.task_id == itemID){
           item=el;
           indexItem= index
         }
       })
-      item.status = list;
-      console.log('el');
-      console.log(item);
-      console.log(indexItem);
+      if(item){
+        item.status = list;
+      }
       this.updateTask(item, indexItem)
     },
 
@@ -122,19 +123,18 @@ export default {
     addTask(newTask) {
       console.log('add task Home');
       console.log(newTask);
-        // const currentDate = new Date(); 
-        // console.log(currentDate);
+        const currentDate = new Date(); 
+        console.log(currentDate);
         this.taskItems.push({ 
+          task_id: newTask.task_id,
           task_title: newTask.task_title,
           task_desciption: newTask.task_desciption,
           task_title_color: newTask.task_title_color,
           task_background_color: newTask.task_background_color,
           task_description_color: newTask.task_description_color,
-          colorPickerDialog: false,
-          // date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
-          // time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
-          status: 1, 
-          done: false,
+          date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
+          time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
+          status: 1,
         });
         localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
         this.modal_add_task = !this.modal_add_task;
@@ -142,8 +142,8 @@ export default {
           message: 'Your task added', 
           type: 'success', 
           position: 'bottom' 
-        }); 
-      
+        });
+        localStorage.setItem('laset-ID', newTask.task_id);
     },
     // Deleting tasks 
     deleteTask(index) {
@@ -154,8 +154,8 @@ export default {
       }
       else
       {
-          console.log('Discard');
-          console.log(index);
+        console.log('Discard');
+        console.log(index);
       }      
     },
     
@@ -167,9 +167,11 @@ export default {
       this.taskItems[index] = task;
       localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
       this.modal_add_task = false;
+      this.taskItems= this.getTaskItems();
     },
     // Initialisation of data
     getTaskItems() {
+      
       const data = localStorage.getItem('todo-List');
       return JSON.parse(data) || [];
     },
@@ -215,7 +217,7 @@ export default {
 /* Add Tasks */
 .task-item {
   background: #ccc;
-  border-radius: 0.5em;
+  border-radius: 1em;
   padding: 1em;
   margin-top: 0.5em;
   text-align: left;
@@ -232,6 +234,7 @@ export default {
   padding:1em 4em;
   display: flex;
   align-items: center;
+  border-radius: 1em;
 }
 
 
@@ -254,7 +257,7 @@ export default {
     margin: 10px;
     padding: 1em;
     border: 1px solid black;
-    border-radius: 8px;
+    border-radius: 1em;
   }
   .content-section {
     flex-basis: 20%;
@@ -268,7 +271,7 @@ export default {
     justify-content: space-between;
     background: #cccccc2d;
     padding: 1em;
-    border-radius: 0.5em;
+    border-radius: 1em;
     min-height: 70px;
     align-items: center;width: 83%;
     margin: auto;
@@ -284,13 +287,12 @@ export default {
   }
   .list-item {
     background: rgba(255, 255, 255, 0.01);
-    border-radius: 16px;
+    border-radius: 1em;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     min-width: 200px;
-    border-radius: 8px;
     height: max-content;
     padding: 1em;
   }
