@@ -5,8 +5,7 @@
             <div class="left-section">
                 <div class="title-task mb-4">
                     <!-- Title input -->
-                    <input :style="{color: newTask.task_title_color}" 
-                    v-model="newTask.task_title" id="input-task-title" 
+                    <input v-model="newTask.task_title" id="input-task-title" 
                     type="text" placeholder="Enter your task here" 
                     ref="input_title_task" >
                     <!-- ColorPicker input -->
@@ -18,8 +17,7 @@
                 </div>
                 <div class="description-task">
                     <!-- Description textarea -->
-                    <textarea :style="{color: newTask.task_description_color}" 
-                    v-model="newTask.task_desciption" 
+                    <textarea v-model="newTask.task_desciption"  placeholder="Task Description"
                     name="task_short_desciption" id="task_short_desciption" 
                     cols="30" rows="5" ></textarea>
                     <!-- ColorPicker input -->
@@ -32,11 +30,22 @@
             </div>
             
             <div class="right-section">
-                <div class="background-color mb-4" :style="{color: newTask.task_background_color}">
+                <div class="background-color mb-4">
                     BackgroundColor
                     <input type="color" v-model="newTask.task_background_color" id="colorPicker_task-bg">
                     <fa :style="{color: newTask.task_background_color}" class="palete-color-picker palette-icon-background" icon="fa-solid fa-palette" />
-                </div>                
+                </div>
+                <div class="select-status-task">
+                     <div class="status_select">
+                        <input id="todo" type="radio" name="radios" :value="option.todo" v-model="newTask.status" >
+                        <input id="inprogress" type="radio" name="radios" :value="option.inprogress" v-model="newTask.status" >
+                        <input id="Done" type="radio" name="radios" :value="option.done" v-model="newTask.status" >
+                        <span></span>
+                        <label for="todo">todo</label>
+                        <label for="inprogress">inprogress</label>
+                        <label for="Done">Done</label>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -46,6 +55,7 @@
         <!-- <input type="date" id="select_date_to_done" name="select_date_to_done"> -->
         <button id="addbutton" @click="actionTask()" >{{ action_button }}</button>
     </div>
+    
   </div>
 </template>
 
@@ -68,7 +78,12 @@ export default {
                 status: 1,
             },
             action_button: 'Create' ,
-            lasetID: null,          
+            lasetID: null,
+            option: {
+                'todo': 1,
+                'inprogress': 2,
+                'done': 3,
+            }          
         }
     },
     mounted() {
@@ -79,17 +94,20 @@ export default {
         }
         
         if(this.update_task_item != null) {
-            console.log('this.update_task_item');
-        console.log(this.update_task_item);
             this.action_button= 'Update'
             this.newTask= this.update_task_item.task;
         }else {
             this.action_button= 'Create'
         }
     },
+    updated() {
+        console.log(this.newTask.status);
+    },
+    watch: {
+        
+    },
     methods: {
-        actionTask(){
-            
+        actionTask(){            
             if(this.action_button== 'Create'){
                 // If task is empty, return alert with message "Please write a task"
                 if(this.newTask.task_title=='') {
@@ -100,9 +118,6 @@ export default {
                     }); 
                 }else {
                     this.newTask.task_id=parseInt(this.lasetID)+1;
-                    console.log('this.lasetID');
-                    console.log(this.lasetID);
-                    console.log(this.newTask.task_id);
                     this.$parent.addTask(this.newTask);
                 }
             }else {
@@ -194,6 +209,7 @@ input[type=color],
 }
 #task_short_desciption {
     resize: none;
+    height: 150px;
 }
 #task_short_desciption:focus,
 #input-task-title:focus {
@@ -232,6 +248,145 @@ input[type=color],
     color: #545454;
     outline: none;
     display: flex;
-    align-items: center;
+    align-items: center;    
 }
+.select-status-task {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+}
+
+
+
+/* -------------------------   Select Status    ---------------------- */
+.select-status-task .status_select {
+  /* margin: auto; */
+  max-width: 10em;
+  /* padding: 1.5em 0; */
+  position: relative;
+}
+.select-status-task .status_select label:before, .select-status-task .status_select span:before {
+  border-radius: 50%;
+  content: "";
+}
+.select-status-task .status_select label {
+  cursor: pointer;
+  display: flex;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.select-status-task .status_select label:before {
+  background: radial-gradient(100% 100% at 33% 33%, rgba(220, 252, 60, 0.25) 25%, rgba(220, 252, 60, 0) 50%), radial-gradient(100% 100% at 67% 67%, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0) 50%);
+  box-shadow: 0 0 0.75em #b0c932 inset;
+  display: inline-block;
+  margin-right: 0.375em;
+  width: 1.5em;
+  height: 1.5em;
+}
+.select-status-task .status_select label:not(:last-of-type) {
+  margin-bottom: 1.5em;
+}
+.select-status-task .status_select span {
+  position: absolute;
+  top: 1.75em;
+  left: 0.25em;
+  width: 1em;
+  height: 1em;
+  transition: transform 0.25s linear;
+  z-index: 1;
+}
+.select-status-task .status_select span, .select-status-task .status_select span:before {
+  display: block;
+}
+.select-status-task .status_select span:before {
+  background-color: #e62020;
+  background-image: radial-gradient(10% 10% at 50% 50%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0)), radial-gradient(12% 12% at 60% 25%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0)), radial-gradient(100% 100% at 60% 50%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.25) 50%);
+  border-radius: 50%;
+  box-shadow: 0 0.1em 0.1em 0 rgba(0, 0, 0, 0.5), 0 0 0.1em 0.1em rgba(0, 0, 0, 0.25) inset;
+  width: 100%;
+  height: 100%;
+}
+
+.select-status-task input {
+  position: fixed;
+  top: -1.5em;
+  left: -1.5em;
+}
+
+.select-status-task input:nth-of-type(1):checked ~ span {
+  transform: translateY(-1.5em);
+}
+.select-status-task input:nth-of-type(1):checked ~ span:before {
+  animation: wobble1 0.5s linear forwards;
+}
+
+@keyframes wobble1 {
+  from, to {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(0) scale(1.33);
+  }
+  50% {
+    transform: translateY(0.25em) scale(1);
+  }
+  67% {
+    transform: translateY(-0.15em) scale(1);
+  }
+  83% {
+    transform: translateY(0.07em) scale(1);
+  }
+}
+.select-status-task input:nth-of-type(2):checked ~ span {
+  transform: translateY(1.5em);
+}
+.select-status-task input:nth-of-type(2):checked ~ span:before {
+  animation: wobble2 0.5s linear forwards;
+}
+
+@keyframes wobble2 {
+  from, to {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(0) scale(1.33);
+  }
+  50% {
+    transform: translateY(0.25em) scale(1);
+  }
+  67% {
+    transform: translateY(-0.15em) scale(1);
+  }
+  83% {
+    transform: translateY(0.07em) scale(1);
+  }
+}
+.select-status-task input:nth-of-type(3):checked ~ span {
+  transform: translateY(4.5em);
+}
+.select-status-task input:nth-of-type(3):checked ~ span:before {
+  animation: wobble3 0.5s linear forwards;
+}
+
+@keyframes wobble3 {
+  from, to {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(0) scale(1.33);
+  }
+  50% {
+    transform: translateY(0.25em) scale(1);
+  }
+  67% {
+    transform: translateY(-0.15em) scale(1);
+  }
+  83% {
+    transform: translateY(0.07em) scale(1);
+  }
+}
+
+
+
 </style>

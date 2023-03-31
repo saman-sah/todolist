@@ -33,6 +33,8 @@ export default {
     props:[        
         'taskItems'
     ],
+    mounted() {        
+    },
 }
 </script>
 

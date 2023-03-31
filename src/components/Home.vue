@@ -89,7 +89,6 @@ export default {
   },
   mounted() {
     this.taskItems= this.getTaskItems();    
-    
   },
   methods: {
     dataItems(status) {
@@ -134,7 +133,7 @@ export default {
           task_description_color: newTask.task_description_color,
           date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
           time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
-          status: 1,
+          status: newTask.status,
         });
         localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
         this.modal_add_task = !this.modal_add_task;
@@ -169,14 +168,13 @@ export default {
       this.modal_add_task = false;
       this.taskItems= this.getTaskItems();
     },
-    // Initialisation of data
+    // Init data
     getTaskItems() {
-      
       const data = localStorage.getItem('todo-List');
       return JSON.parse(data) || [];
     },
     clearHistory() {
-      // Réinitialiser le LocalStorage
+      // Clear LocalStorage
       localStorage.clear();
       // Refresh page
       location.reload();
@@ -230,7 +228,6 @@ export default {
   align-items: center;
 }
 .action-buttons button {
-  /* width: 45%; */
   padding:1em 4em;
   display: flex;
   align-items: center;
@@ -262,10 +259,6 @@ export default {
   .content-section {
     flex-basis: 20%;
   }
-  /* .board-section {
-    flex-basis: 70%;
-    overflow: auto;
-  } */
   .header-todo-list {
     display: flex;
     justify-content: space-between;
