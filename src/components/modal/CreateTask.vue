@@ -115,7 +115,7 @@ export default {
     },
     methods: {
         actionTask(){            
-            if(this.action_button== 'Create'){
+            if(this.update_task_item == null){
                 // If task title is empty, return alert with message "Enter your task title"
                 if(this.newTask.task_title=='') {
                     this.$toast.open({ 
