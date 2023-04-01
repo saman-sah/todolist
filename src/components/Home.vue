@@ -7,20 +7,30 @@
           <button class="btn btn-secondary" @click="clearHistory">Clear All Tasks</button>
       </nav>
     </header>
+    <div class="tabs-header-mobile" v-if="mobile_version">
+      <ul class="nav">
+        <li class="nav-item" @click="selectActiveTab('todo')">
+          To Do
+        </li>
+        <li class="nav-item" @click="selectActiveTab('inprogress')">
+          In progress
+        </li>
+        <li class="nav-item" @click="selectActiveTab('done')">
+          Done
+        </li>
+      </ul>
+    </div>
     <div class="todo-list-wrapper">
-      <!-- <section class="section content-section">
-        <nav><h4>TO DO in Long Time</h4></nav>   
-        <hr>
-      </section> -->
 
-
-      <section class="section content-section drop-zone" 
+      <section v-show="selectedTab.todo" class="section content-section drop-zone" 
+      ref="todoTab"
       @drop="onDrop($event, 1)" 
       @dragenter.prevent 
       @dragover.prevent>
         <nav>
           <img src="@/assets/img/todolist.png" alt="">
           <h4>TO DO</h4>
+          
         </nav>      
         <hr>
 
@@ -32,7 +42,9 @@
       </section>
 
 
-      <section class="section content-section drop-zone" 
+      
+      <section v-show="selectedTab.inprogress" class="section content-section drop-zone"
+      ref="inprogressTab" 
       @drop="onDrop($event, 2)" 
       @dragenter.prevent 
       @dragover.prevent>
@@ -46,7 +58,8 @@
       </section>
 
 
-      <section class="section content-section drop-zone"  
+      <section v-show="selectedTab.done" class="section content-section drop-zone" 
+      ref="doneTab" 
       @drop="onDrop($event, 3)" 
       @dragenter.prevent 
       @dragover.prevent>
@@ -79,8 +92,17 @@ export default {
       modal_add_task: false,
       task_component: 0,
       update_task_item: null,
+      mobile_version: false,
+      selectedTab:{
+        todo: true,
+        inprogress: true,
+        done: true
+      }
     }
   },
+  props: [
+    'screenWidth'
+  ],
   components: {
     'task-component': Task,
     'list-component': List,
@@ -89,10 +111,43 @@ export default {
   computed: {
     
   },
+  watch: {
+    screenWidth(newValue) {
+      if(newValue < 768) {
+        this.mobile_version= true;
+        this.selectedTab={
+          todo: true,
+          inprogress: false,
+          done: false
+        }
+      }else {
+        this.mobile_version= false;
+        this.selectedTab={
+          todo: true,
+          inprogress: true,
+          done: true
+        }
+      }
+    }
+  },
   mounted() {
-    this.taskItems= this.getTaskItems();    
+    this.taskItems= this.getTaskItems(); 
   },
   methods: {
+    selectActiveTab(tab) {     
+      this.selectedTab={
+        todo: false,
+        inprogress: false,
+        done: false
+      }
+      if(tab== 'todo'){
+        this.selectedTab.todo= true;
+      }else if(tab== 'inprogress'){
+        this.selectedTab.inprogress= true;
+      }else if(tab== 'done'){
+        this.selectedTab.done= true;
+      }
+    },
     dataItems(status) {
       return this.taskItems.filter((item) => item.status == status)
     },
@@ -188,129 +243,7 @@ export default {
 
 
 <style>
-/* Global CSS */
-.home h1, .home  h2, .home  h3, .home  h4, .home  h5, .home  h6 {
-  margin-bottom: 0;
-}
-.home hr {
-  margin: 0.5em 0;
-  color: #fff;
-  text-shadow: 1px 1px 1px #000
-}
-#todolist button {
-  font-size: 14px;
-  max-height: 38px;
-}
-#todolist .btn-primary {
-  background-color: #e62020;
-  border: none;
-}
-#todolist .btn-secondary {
-  background-color: #dcfc3c;
-  border: none;
-  color: #545454;
-}
 
 
-
-/* Add Tasks */
-.task-item {
-  background: #ccc;
-  border-radius: 1em;
-  padding: 1em;
-  margin-top: 0.5em;
-  text-align: left;
-}
-.task-nav,
-.action-buttons {
-  display: flex; 
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
-}
-.action-buttons button {
-  padding:1em 4em;
-  display: flex;
-  align-items: center;
-  border-radius: 1em;
-}
-
-
-
-
-.content-section > nav {
-  height: 40px;
-}
-.nav-hearder-board {
-  display: flex;
-  justify-content: space-between;
-}
-  .home .todo-list-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    height: 90vh;
-  }
-  .section {
-    margin: 10px;
-    padding: 1em;
-    border: 1px solid rgb(210, 204, 204);
-    border-radius: 1em;
-    background: #fcfcfc5c;
-  }
-  .content-section {
-    flex-basis: 27%;
-  }
-  .content-section nav h4{
-    color: #000;
-    text-shadow: 2px 1px 3px #fff;
-    font-size: 32px;
-  }
-  .content-section nav {
-    display: flex;
-    gap: 1em;
-  }
-  .header-todo-list {
-    display: flex;
-    justify-content: space-between;
-    background: #fcfcfc5c;
-    padding: 1em;
-    border-radius: 1em;
-    min-height: 70px;
-    align-items: center;
-    width: 83%;
-    margin: auto;
-    border: 1px solid rgb(210, 204, 204);
-  }
-
-  .lists-section {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 1em;
-    overflow: auto;
-    padding: 1em;
-    height: 90%;
-  }
-  .list-item {
-    background: rgba(255, 255, 255, 0.01);
-    border-radius: 1em;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    min-width: 200px;
-    height: max-content;
-    padding: 1em;
-  }
-
-
-
-
-
-  @media (max-width: 768px) {
-    .column {
-      flex-basis: 100%;
-      order: 3;
-    }
-  }
+  
 </style>
