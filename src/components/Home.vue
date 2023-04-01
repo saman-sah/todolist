@@ -1,12 +1,17 @@
 <template>
-
   <div class="home" id="todolist">
     <header class="header-todo-list">
+      <!-- Action Button Add Task and Clear all Task(localStorage) -->
       <nav class="action-buttons">
-          <button class="btn btn-primary" id="addbutton" @click="modal_add_task= !modal_add_task" >Add Task</button>
-          <button class="btn btn-secondary" @click="clearHistory">Clear All Tasks</button>
+        <button class="btn btn-primary"  @click="modal_add_task= !modal_add_task" >
+          Add Task
+        </button>
+        <button class="btn btn-secondary" @click="clearHistory">
+          Clear All Tasks
+        </button>
       </nav>
     </header>
+    <!-- Tabs for Mobile version -->
     <div class="tabs-header-mobile" v-if="mobile_version">
       <ul class="nav">
         <li class="nav-item" @click="selectActiveTab('todo')">
@@ -20,76 +25,75 @@
         </li>
       </ul>
     </div>
-    <div class="todo-list-wrapper">
 
+    <div class="todo-list-wrapper">
+      <!-- Todo cards section -->
       <section v-show="selectedTab.todo" class="section content-section drop-zone" 
-      ref="todoTab"
-      @drop="onDrop($event, 1)" 
-      @dragenter.prevent 
-      @dragover.prevent>
+        ref="todoTab"
+        @drop="onDrop($event, 1)" 
+        @dragenter.prevent 
+        @dragover.prevent>
+        <!-- Nav title todo section -->
         <nav>
           <img src="@/assets/img/1.png" alt="">
-          <h4>TO DO</h4>
-          
+          <h4>TO DO</h4>          
         </nav>      
         <hr>
-
-        <!-- Task Component -->
+        <!-- Task Component---(Showing Todo Cards) -->
         <task-component 
-        :taskItems="dataItems(1)" 
-        @showModalUpdateTask="showModalUpdateTask($event)"
+          :taskItems="dataItems(1)" 
+          @showModalUpdateTask="showModalUpdateTask($event)"
         />
       </section>
 
-
-      
+      <!-- In progress cards section -->
       <section v-show="selectedTab.inprogress" class="section content-section drop-zone"
-      ref="inprogressTab" 
-      @drop="onDrop($event, 2)" 
-      @dragenter.prevent 
-      @dragover.prevent>
+        ref="inprogressTab" 
+        @drop="onDrop($event, 2)" 
+        @dragenter.prevent 
+        @dragover.prevent>
+        <!-- Nav title in progress section -->
         <nav>
           <img src="@/assets/img/2.png" alt="">
           <h4>IN PROGRESS</h4>
         </nav>
         <hr>
-
+        <!-- Task Component---(Showing Inprogress Cards) -->
         <task-component 
-        :taskItems="dataItems(2)" 
-        @showModalUpdateTask="showModalUpdateTask($event)"
+          :taskItems="dataItems(2)" 
+          @showModalUpdateTask="showModalUpdateTask($event)"
         />
       </section>
 
-
+      <!-- Done cards sections -->
       <section v-show="selectedTab.done" class="section content-section drop-zone" 
-      ref="doneTab" 
-      @drop="onDrop($event, 3)" 
-      @dragenter.prevent 
-      @dragover.prevent>
+        ref="doneTab" 
+        @drop="onDrop($event, 3)" 
+        @dragenter.prevent 
+        @dragover.prevent>
+        <!-- Nav title done section -->
         <nav>
           <img src="@/assets/img/3.png" alt="">
           <h4>Done</h4>
         </nav>  
         <hr>
-
+        <!-- Task Component---(Showing Done Cards) -->
         <task-component 
-        :taskItems="dataItems(3)" 
-        @showModalUpdateTask="showModalUpdateTask($event)"
+          :taskItems="dataItems(3)" 
+          @showModalUpdateTask="showModalUpdateTask($event)"
         />
       </section>
     </div>
-    
+
+    <!-- Create and Update task Modal Component     -->
     <create-task-modal v-if="modal_add_task"
-    :update_task_item="update_task_item"
-    @addTask="addTask($event)"
-    @closeModal="closeModal()"
-    />
+      :update_task_item="update_task_item"
+      @addTask="addTask($event)"/>
   </div>
 </template>
 
 <script>
 import Task from './partial/Task.vue'
-import List from './partial/List.vue'
 import CreateTaskModal from './modal/CreateTask.vue'
 export default {
   data() {
@@ -111,11 +115,7 @@ export default {
   ],
   components: {
     'task-component': Task,
-    'list-component': List,
     'create-task-modal': CreateTaskModal,
-  },
-  computed: {
-    
   },
   watch: {
     screenWidth(newValue) {
@@ -180,39 +180,39 @@ export default {
 
     // Adding tasks to the list    
     addTask(newTask) {
-      console.log('add task Home');
-      console.log(newTask);
-        const currentDate = new Date(); 
-        console.log(currentDate);
-        this.taskItems.push({ 
-          task_id: newTask.task_id,
-          task_title: newTask.task_title,
-          task_desciption: newTask.task_desciption,
-          task_title_color: newTask.task_title_color,
-          task_background_color: newTask.task_background_color,
-          task_description_color: newTask.task_description_color,
-          date: `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`, // get dateformat dd-m-yy
-          time: `${currentDate.getHours()}:${currentDate.getMinutes()}`, // get time format o:m
-          status: newTask.status,
-        });
-        localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
-        this.modal_add_task = !this.modal_add_task;
-        this.$toast.open({ 
-          message: 'Your task added', 
-          type: 'success', 
-          position: 'bottom' 
-        });
-        localStorage.setItem('laset-ID', newTask.task_id);
+      const currentDate = new Date();
+      this.taskItems.push({ 
+        task_id: newTask.task_id,
+        task_title: newTask.task_title,
+        task_desciption: newTask.task_desciption,
+        task_title_color: newTask.task_title_color,
+        task_background_color: newTask.task_background_color,
+        task_description_color: newTask.task_description_color,
+        // Get Date with format dd--mm--yy
+        date: `${currentDate.getDate()}/
+        ${currentDate.getMonth() + 1}/
+        ${currentDate.getFullYear()}`, 
+        // Get time format O:M
+        time: `${currentDate.getHours()}:
+        ${currentDate.getMinutes()}`,
+        status: newTask.status,
+      });
+      localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
+      this.modal_add_task = !this.modal_add_task;
+      this.$toast.open({ 
+        message: 'Your task added', 
+        type: 'success', 
+        position: 'bottom' 
+      });
+      localStorage.setItem('laset-ID', newTask.task_id);
     },
     // Deleting tasks 
     deleteTask(index) {
-      if (window.confirm('Are you sure to delete this task?'))
-      {
-          this.taskItems.splice(index, 1);
-          localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
+      if (window.confirm('Are you sure to delete this task?')) {
+        this.taskItems.splice(index, 1);
+        localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
       }
-      else
-      {
+      else{
         console.log('Discard');
         console.log(index);
       }      
@@ -246,10 +246,3 @@ export default {
   },
 }
 </script>
-
-
-<style>
-
-
-  
-</style>

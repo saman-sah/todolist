@@ -199,8 +199,24 @@ h1, h2, h3, h4, h5, h6 {
   color: #545454;
   opacity: 0.5; 
 }
+/* Add-Create Button */
+#addbutton {
+    width: 100%;
+    border-radius: 1em;
+}
 
-
+.header-modal-component {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5em 1em;
+}
+.header-modal-component h4{
+    font-size: 20px;
+}
+.header-modal-component .close-modal {
+    font-size: 24px;
+    cursor: pointer;
+}
 /* -------------------------   Left Section    ---------------------- */
 .left-section {
     flex-basis: 60%;
@@ -216,7 +232,8 @@ input[type=color],
     right: 5px;
     bottom: 5px;
     width: 40px;
-    font-size: 25px;    
+    font-size: 25px;
+    cursor: pointer;
 }
 /*TITLE: color inputs and color pickers */
 .title-task input[type=color], 
