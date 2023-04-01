@@ -1,7 +1,12 @@
 <template>
-  <div class="bg-modal" @click.self="$emit('closeModal')">
+  <div class="bg-modal" @click.self="this.$parent.closeModal()">
     <div class="modal-content-add-task">
+        <div class="header-modal-component">
+            <h4>{{ header_title }}</h4>
+            <fa @click="this.$parent.closeModal()" class="close-modal" icon="fa-solid fa-times" />
+        </div>
         <div class="flex-container">
+            <!-- Left Section title & description -->
             <div class="left-section">
                 <div class="title-task">
                     <!-- Title input -->
@@ -28,13 +33,16 @@
                     icon="fa-solid fa-palette" />
                 </div>
             </div>
-            
+            <!--End---- Left Section title & description -->
+
+            <!-- Right Section Background Color & Status -->
             <div class="right-section">
                 <div class="background-color">
                     BackgroundColor
                     <input type="color" v-model="newTask.task_background_color" id="colorPicker_task-bg">
                     <fa :style="{color: newTask.task_background_color}" class="palete-color-picker palette-icon-background" icon="fa-solid fa-palette" />
                 </div>
+                <!-- Status radio button items -->
                 <div class="select-status-task">
                      <div class="status_select">
                         <input id="todo" type="radio" name="radios" :value="option.todo" v-model="newTask.status" >
@@ -47,13 +55,14 @@
                     </div>
                 </div>
             </div>
+            <!--End------- Right Section Background Color & Status -->
         </div>
         
         <hr>
         
         <!-- <hr> -->
         <!-- <input type="date" id="select_date_to_done" name="select_date_to_done"> -->
-        <button id="addbutton" @click="actionTask()" >{{ action_button }}</button>
+        <button id="addbutton" class="btn btn-primary" @click="actionTask()" >{{ action_button }}</button>
     </div>
     
   </div>
@@ -77,8 +86,9 @@ export default {
                 time: null,
                 status: 1,
             },
-            action_button: 'Create' ,
+            action_button: 'Create New Task' ,
             lasetID: null,
+            header_title: 'Create New Task',
             option: {
                 'todo': 1,
                 'inprogress': 2,
@@ -87,29 +97,26 @@ export default {
         }
     },
     mounted() {
+        // Set Last Id for creat new task
         if(localStorage.getItem('laset-ID')) {
             this.lasetID= localStorage.getItem('laset-ID')
         }else{
             this.lasetID=0
         }
-        
+        // Value of action button--- Create and Update
         if(this.update_task_item != null) {
-            this.action_button= 'Update'
+            this.action_button= 'Update Task'
             this.newTask= this.update_task_item.task;
+            this.header_title= 'Update  '+this.update_task_item.task.task_title;
         }else {
-            this.action_button= 'Create'
+            this.action_button= 'Create New Task';
+            this.header_title= 'Create New Task';
         }
-    },
-    updated() {
-        console.log(this.newTask.status);
-    },
-    watch: {
-        
     },
     methods: {
         actionTask(){            
             if(this.action_button== 'Create'){
-                // If task is empty, return alert with message "Please write a task"
+                // If task title is empty, return alert with message "Enter your task title"
                 if(this.newTask.task_title=='') {
                     this.$toast.open({ 
                     message: 'Enter your task title', 
@@ -128,3 +135,8 @@ export default {
     },
 }
 </script>
+<style scoped>
+hr {
+    color: black;
+}
+</style>
