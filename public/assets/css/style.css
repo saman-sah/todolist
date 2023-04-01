@@ -3,10 +3,11 @@
     src:url("../fonts/Poppins-Regular.ttf") ; 
 }
 body {
-  font-family: Poppins-Regular !important;
-  /* background-image: url('../img/bg.jpg'); */
-  background-image: url('../img/bg.jpg');
-  padding-top: 2em;
+    font-family: Poppins-Regular !important;
+    background-image: url('../img/bg.jpg');    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 @font-face {
     font-family: Poppins-Bold;
@@ -14,4 +15,182 @@ body {
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: Poppins-Bold !important;
+}
+
+
+
+/* -------------------------   Home Componenet   ---------------------- */
+
+/* Global CSS */
+.home h1, .home  h2, .home  h3, .home  h4, .home  h5, .home  h6 {
+    margin-bottom: 0;
+  }
+  .home hr {
+    margin: 0.5em 0;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000
+  }
+  #todolist  {
+    padding-top: 2em;
+  }
+  #todolist button {
+    font-size: 14px;
+    max-height: 38px;
+  }
+  #todolist .btn-primary {
+    background-color: #e62020;
+    border: none;
+  }
+  #todolist .btn-secondary {
+    background-color: #dcfc3c;
+    border: none;
+    color: #545454;
+  }
+  
+  
+  
+  /* Add Tasks */
+  .task-item {
+    background: #ccc;
+    border-radius: 1em;
+    padding: 1em;
+    margin-top: 0.5em;
+    text-align: left;
+  }
+  .task-nav,
+  .action-buttons {
+    display: flex; 
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+  }
+  .action-buttons button {
+    padding:1em 4em;
+    display: flex;
+    align-items: center;
+    border-radius: 1em;
+  }
+  
+  
+  
+  
+  .content-section > nav {
+    height: 40px;
+  }
+  .nav-hearder-board {
+    display: flex;
+    justify-content: space-between;
+  }
+    .home .todo-list-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      height: 90vh;
+    }
+    .todo-list-wrapper .content-section {
+      margin: 10px;
+      padding: 1em;
+      border: 1px solid rgb(210, 204, 204);
+      border-radius: 1em;
+      background: #fcfcfc5c;
+      flex-basis: 27%;
+    }
+    .content-section nav h4{
+      color: #000;
+      text-shadow: 2px 1px 3px #fff;
+      font-size: 32px;
+    }
+    .content-section nav {
+      display: flex;
+      gap: 1em;
+    }
+    .header-todo-list {
+      display: flex;
+      justify-content: space-between;
+      background: #fcfcfc5c;
+      padding: 1em;
+      border-radius: 1em;
+      min-height: 70px;
+      align-items: center;
+      width: 83%;
+      margin: auto;
+      border: 1px solid rgb(210, 204, 204);
+    }
+  
+    .lists-section {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 1em;
+      overflow: auto;
+      padding: 1em;
+      height: 90%;
+    }
+    .list-item {
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 1em;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      min-width: 200px;
+      height: max-content;
+      padding: 1em;
+    }
+  
+
+
+
+
+
+
+/* Mobile Version */
+.tabs-header-mobile {
+    margin-top: 1em;
+  }
+  .tabs-header-mobile ul {
+    display: flex;
+    gap: 1em;
+    justify-content: space-between;
+  }
+  .tabs-header-mobile li.nav-item {
+      padding: 0.5em 2em;
+      color: #fff;
+      background: #cccccc3b;
+      border-radius: 1em;
+  }
+
+
+
+
+
+
+@media only screen and (max-width: 768px) {
+    #todolist {
+        padding: 1em;
+    }
+    .action-buttons button {
+        padding: 1em;
+    }
+    .header-todo-list {
+        width: 100%;
+    }
+    .todo-list-wrapper .content-section {
+        margin: 1em 0;
+        flex-basis: 100%;
+      }
+    .todo-list-wrapper .content-section nav img {
+        width: auto;
+    height: 30px;
+      }
+    .content-section nav h4 {
+        font-size: 26px;
+    }
+}
+@media only screen and (max-width: 435px) {
+    .tabs-header-mobile ul {
+        gap: 0.5em;
+      }
+      .tabs-header-mobile li.nav-item {
+          padding: 0.5em 1em;
+      }
 }
