@@ -28,7 +28,7 @@
       @dragenter.prevent 
       @dragover.prevent>
         <nav>
-          <img src="@/assets/img/todolist.png" alt="">
+          <img src="@/assets/img/1.png" alt="">
           <h4>TO DO</h4>
           
         </nav>      
@@ -48,7 +48,10 @@
       @drop="onDrop($event, 2)" 
       @dragenter.prevent 
       @dragover.prevent>
-        <nav><h4>IN PROGRESS</h4></nav>
+        <nav>
+          <img src="@/assets/img/2.png" alt="">
+          <h4>IN PROGRESS</h4>
+        </nav>
         <hr>
 
         <task-component 
@@ -63,7 +66,10 @@
       @drop="onDrop($event, 3)" 
       @dragenter.prevent 
       @dragover.prevent>
-        <nav><h4>Done</h4></nav>  
+        <nav>
+          <img src="@/assets/img/3.png" alt="">
+          <h4>Done</h4>
+        </nav>  
         <hr>
 
         <task-component 
