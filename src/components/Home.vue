@@ -14,12 +14,12 @@
         <div v-if="user" class="user-logout">
           <h4>{{ user.displayName }}</h4>
           <div class="log-out">
-            <button @click="logout()">Log Out</button>
+            <button class="btn btn-primary" @click="logout()">Log Out</button>
           </div>        
         </div>
         <div v-else class="login-register-buttons">
           <button class="btn btn-primary" @click="toggle_login_register= !toggle_login_register">
-            Login/Register
+            Login  /  Register
           </button>
         </div>
         

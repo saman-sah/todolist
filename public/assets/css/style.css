@@ -550,6 +550,29 @@ input[type=color],
     .content-section nav h4 {
         font-size: 26px;
     }
+
+
+    /* Register-Login modal */
+    .cards-buttons, .user-logout {
+      justify-content: space-between;
+      width: 100%;
+    }.action-buttons {
+      flex-direction: column-reverse;
+    }
+    .login-register-buttons {
+      width: 100%;
+    }
+    .login-register-buttons button {
+      width: 100%;
+      padding: 0.2em 1em;margin-bottom: 0.5em;
+      
+    justify-content: center;
+    }
+    .cards-buttons button ,
+    .log-out button {
+      padding: 0.2em 1em;
+      margin-bottom: 0.5em;
+    }
 }
 @media only screen and (max-width: 435px) {
     .tabs-header-mobile ul {
