@@ -3,12 +3,26 @@
     <header class="header-todo-list">
       <!-- Action Button Add Task and Clear all Task(localStorage) -->
       <nav class="action-buttons">
-        <button class="btn btn-primary"  @click="modal_add_task= !modal_add_task" >
-          Add Task
-        </button>
-        <button class="btn btn-secondary" @click="clearHistory">
-          Clear All Tasks
-        </button>
+        <div class="cards-buttons">
+          <button class="btn btn-primary"  @click="modal_add_task= !modal_add_task" >
+            Add Task
+          </button>
+          <button class="btn btn-secondary" @click="clearHistory">
+            Clear All Tasks
+          </button>
+        </div>
+        <div v-if="user" class="user-logout">
+          <h4>{{ user.displayName }}</h4>
+          <div class="log-out">
+            <button @click="logout()">Log Out</button>
+          </div>        
+        </div>
+        <div v-else class="login-register-buttons">
+          <button class="btn btn-primary" @click="toggle_login_register= !toggle_login_register">
+            Login/Register
+          </button>
+        </div>
+        
       </nav>
     </header>
     <!-- Tabs for Mobile version -->
@@ -89,15 +103,32 @@
     <create-task-modal v-if="modal_add_task"
       :update_task_item="update_task_item"
       @addTask="addTask($event)"/>
+      <login-register
+      v-if="toggle_login_register"
+      @register="register($event)"
+      @login="login($event)"
+      @closeModal="toggle_login_register= !toggle_login_register"
+      />
   </div>
 </template>
 
 <script>
 import Task from './partial/Task.vue'
 import CreateTaskModal from './modal/CreateTask.vue'
+import LoginRegister from './modal/LoginRegister.vue'
+import { auth } from '../firebase'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+  signOut
+} from 'firebase/auth'
+
+
 export default {
   data() {
     return {
+      toggle_login_register: false,
       taskItems:[],
       modal_add_task: false,
       task_component: 0,
@@ -107,7 +138,8 @@ export default {
         todo: true,
         inprogress: true,
         done: true
-      }
+      },
+      user: null,
     }
   },
   props: [
@@ -116,6 +148,7 @@ export default {
   components: {
     'task-component': Task,
     'create-task-modal': CreateTaskModal,
+    'login-register': LoginRegister,
   },
   watch: {
     screenWidth(newValue) {
@@ -136,10 +169,108 @@ export default {
       }
     }
   },
+  beforeMount() {
+    this.fetchUser;
+  },
   mounted() {
     this.taskItems= this.getTaskItems(); 
   },
+  computed: {
+    fetchUser(){
+      auth.onAuthStateChanged(async user=> {
+        if(user=== null) {
+          this.clearUser();
+        }else {
+          this.setUser(user)
+        }
+      })
+    }
+  },
   methods: {
+    async login(data){
+      const {email, password}= data;
+      try {
+        await signInWithEmailAndPassword(auth, email, password)
+      } catch (error) {
+        switch (error.code) {
+          case 'auth/user-not-found':
+            alert("User not Found")
+            break;
+          case 'auth/wrong-password':
+            alert("Wrong Password")
+            break;
+        
+          default:
+            alert("Something went Wrong")
+            
+        }
+        return
+      }
+      this.setUser(auth.currentUser);
+      this.toggle_login_register= false;
+    },
+    
+    async register(data){
+      console.log(data);
+      const {email, password, name }= data;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password)
+      } catch (error) {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            alert("Email already in use")
+            break;
+          case 'auth/invalid-email':
+            alert("Invalid Email")
+            break;
+          case 'auth/operation-not-allowed':
+            alert("Operation not allowes")
+            break;
+          case 'auth/weak-password':
+            alert("Week Password")
+            break;
+        
+          default:
+            alert("Something went Wrong")
+            
+        }
+        return
+      }
+      
+      try {
+        await updateProfile(auth.currentUser, {displayName: name})
+      }catch (error){
+        console.log('Something went wrong');
+        return
+      }
+      console.log('auth.currentUser');
+      console.log(auth.currentUser);
+      this.setUser(auth.currentUser)
+      this.toggle_login_register= false;
+    },
+    async logout() {
+      await signOut(auth);
+      this.clearUser();
+    },
+    
+    setUser(user) {
+      this.user= user;
+    },
+    clearUser() {
+      this.user= null;
+    },
+
+
+
+
+
+
+
+
+
+
+
+    
     selectActiveTab(tab) {     
       this.selectedTab={
         todo: false,
@@ -246,3 +377,13 @@ export default {
   },
 }
 </script>
+<style scoped>
+.login-register {
+    height: 400px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    margin-top: 300px;
+}
+</style>
