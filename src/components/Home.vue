@@ -117,6 +117,8 @@ import Task from './partial/Task.vue'
 import CreateTaskModal from './modal/CreateTask.vue'
 import LoginRegister from './modal/LoginRegister.vue'
 import { auth } from '../firebase'
+import { collection, onSnapshot, query, where  } from "firebase/firestore";
+import { db } from '@/firebase/index'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -173,7 +175,9 @@ export default {
     this.fetchUser;
   },
   mounted() {
-    this.taskItems= this.getTaskItems(); 
+    this.getDataFirebase();
+    // this.taskItems= this.getTaskItems(); 
+    console.log(this.taskItems);
   },
   computed: {
     fetchUser(){
@@ -182,11 +186,36 @@ export default {
           this.clearUser();
         }else {
           this.setUser(user)
+          console.log(user);
+           this.getDataFirebase(user.uid);
         }
       })
     }
   },
   methods: {
+    getDataFirebase(userUId) {
+      console.log('userUId');
+      console.log(userUId);
+      const q=query(collection(db, "todos"), where('user_uid', '==', userUId))
+      onSnapshot(q, (querySnapshot) => {
+        const todos=[];
+        querySnapshot.forEach((doc) => {
+          let item= doc.data();
+          const todo= {
+            task_id: doc.id,
+            task_title: item.title,
+            task_desciption: item.description,
+            task_title_color: item.title_color,
+            task_background_color: item.bg_color,
+            task_description_color: item.des_color,
+            status: item.status,
+          }
+          todos.push(todo)
+        });
+        this.taskItems= todos
+        console.log(this.taskItems);
+      })
+    },
     async login(data){
       const {email, password}= data;
       try {
@@ -258,19 +287,9 @@ export default {
     },
     clearUser() {
       this.user= null;
-    },
-
-
-
-
-
-
-
-
-
-
-
-    
+      // this.fetchUser;
+      this.taskItems= null;
+    },    
     selectActiveTab(tab) {     
       this.selectedTab={
         todo: false,
@@ -286,7 +305,9 @@ export default {
       }
     },
     dataItems(status) {
-      return this.taskItems.filter((item) => item.status == status)
+      if(this.taskItems){
+        return this.taskItems.filter((item) => item.status == status)
+      }
     },
     startDrag(evt, item, index) {      
       evt.dataTransfer.dropEffect = 'move'
