@@ -3,19 +3,19 @@
     <header class="header-todo-list">
       <!-- Action Button Add Task and Clear all Task(localStorage) -->
       <nav class="action-buttons">
-        <div class="cards-buttons">
+        <div v-if="user" class="cards-buttons">
           <button class="btn btn-primary"  @click="modal_add_task= !modal_add_task" >
             Add Task
           </button>
           <button class="btn btn-secondary" @click="deleteAllTasks(user.uid)">
             Delete All Tasks
           </button>
-        </div>
-        <div v-if="user" class="user-logout">
-          <h4>{{ user.displayName }}</h4>
           <div class="log-out">
             <button class="btn btn-primary" @click="logout()">Log Out</button>
-          </div>        
+          </div>   
+        </div>
+        <div v-if="user" class="user_profile mb-3">
+          <h4>{{ user.displayName }} Todos</h4>               
         </div>
         <div v-else class="login-register-buttons">
           <button class="btn btn-primary" @click="toggle_login_register= !toggle_login_register">
@@ -205,9 +205,7 @@ export default {
       var fbDoc= doc;
       if (window.confirm('Are you sure to delete all task?')) {
         if(userUId){
-          const q=query(collection(db, "todos"), where('user_uid', '==', userUId));
-         
-          const todos_ids=[];
+          const q=query(collection(db, "todos"), where('user_uid', '==', userUId));        
           onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc)=> {
               const todo_id= doc.id;
