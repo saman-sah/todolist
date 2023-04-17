@@ -439,7 +439,12 @@ input[type=color],
   display: flex;
   gap: 1em;
 }
+.login-register-buttons {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
 
+}
 
 
 @keyframes wobble1 {
@@ -540,23 +545,24 @@ input[type=color],
         width: 100%;
     }
     .todo-list-wrapper .content-section {
-        margin: 1em 0;
-        flex-basis: 100%;
-      }
+      margin: 1em 0;
+      flex-basis: 100%;
+    }
     .todo-list-wrapper .content-section nav img {
-        width: auto;
-    height: 30px;
-      }
+      width: auto;
+      height: 30px;
+    }
     .content-section nav h4 {
-        font-size: 26px;
+      font-size: 26px;
     }
 
 
     /* Register-Login modal */
-    .cards-buttons, .user-logout {
+    .cards-buttons, .user_profile{
       justify-content: space-between;
       width: 100%;
-    }.action-buttons {
+    }
+    .action-buttons {
       flex-direction: column-reverse;
     }
     .login-register-buttons {
@@ -565,8 +571,7 @@ input[type=color],
     .login-register-buttons button {
       width: 100%;
       padding: 0.2em 1em;margin-bottom: 0.5em;
-      
-    justify-content: center;
+      justify-content: center;
     }
     .cards-buttons button ,
     .log-out button {
@@ -581,4 +586,8 @@ input[type=color],
       .tabs-header-mobile li.nav-item {
           padding: 0.5em 1em;
       }
+      #todolist button {
+        font-size: 12px;
+        padding: 0.2em 0.75em;
+    }
 }
