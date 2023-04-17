@@ -7,8 +7,8 @@
           <button class="btn btn-primary"  @click="modal_add_task= !modal_add_task" >
             Add Task
           </button>
-          <button class="btn btn-secondary" @click="clearHistory">
-            Clear All Tasks
+          <button class="btn btn-secondary" @click="deleteAllTasks(user.uid)">
+            Delete All Tasks
           </button>
         </div>
         <div v-if="user" class="user-logout">
@@ -101,14 +101,15 @@
 
     <!-- Create and Update task Modal Component     -->
     <create-task-modal v-if="modal_add_task"
-      :update_task_item="update_task_item"
-      @addTask="addTask($event)"/>
-      <login-register
-      v-if="toggle_login_register"
-      @register="register($event)"
-      @login="login($event)"
-      @closeModal="toggle_login_register= !toggle_login_register"
-      />
+    :update_task_item="update_task_item"
+    @addTask="addTask($event)"/>
+
+    <login-register
+    v-if="toggle_login_register"
+    @register="register($event)"
+    @login="login($event)"
+    @closeModal="toggle_login_register= !toggle_login_register"
+    />
   </div>
 </template>
 
@@ -117,7 +118,7 @@ import Task from './partial/Task.vue'
 import CreateTaskModal from './modal/CreateTask.vue'
 import LoginRegister from './modal/LoginRegister.vue'
 import { auth } from '../firebase'
-import { collection, onSnapshot, query, where  } from "firebase/firestore";
+import { collection, onSnapshot, query, where, addDoc, deleteDoc, doc, updateDoc   } from "firebase/firestore";
 import { db } from '@/firebase/index'
 import {
   createUserWithEmailAndPassword,
@@ -176,8 +177,6 @@ export default {
   },
   mounted() {
     this.getDataFirebase();
-    // this.taskItems= this.getTaskItems(); 
-    console.log(this.taskItems);
   },
   computed: {
     fetchUser(){
@@ -185,37 +184,71 @@ export default {
         if(user=== null) {
           this.clearUser();
         }else {
-          this.setUser(user)
-          console.log(user);
+          this.setUser(user);
            this.getDataFirebase(user.uid);
         }
       })
     }
   },
   methods: {
-    getDataFirebase(userUId) {
-      console.log('userUId');
-      console.log(userUId);
-      const q=query(collection(db, "todos"), where('user_uid', '==', userUId))
-      onSnapshot(q, (querySnapshot) => {
-        const todos=[];
-        querySnapshot.forEach((doc) => {
-          let item= doc.data();
-          const todo= {
-            task_id: doc.id,
-            task_title: item.title,
-            task_desciption: item.description,
-            task_title_color: item.title_color,
-            task_background_color: item.bg_color,
-            task_description_color: item.des_color,
-            status: item.status,
-          }
-          todos.push(todo)
-        });
-        this.taskItems= todos
-        console.log(this.taskItems);
-      })
+     // Deleting tasks from Firebase Database 
+    deleteTask(taskId) {
+      if (window.confirm('Are you sure to delete this task?')) {
+          deleteDoc(doc(db, "todos", taskId));
+      }
+      else{        
+        return
+      }      
     },
+    //End--- Deleting tasks from Firebase Database 
+     deleteAllTasks(userUId) {
+      var fbDoc= doc;
+      if (window.confirm('Are you sure to delete all task?')) {
+        if(userUId){
+          const q=query(collection(db, "todos"), where('user_uid', '==', userUId));
+         
+          const todos_ids=[];
+          onSnapshot(q, (querySnapshot) => {
+            querySnapshot.forEach((doc)=> {
+              const todo_id= doc.id;
+              deleteDoc(fbDoc(db, "todos", todo_id));
+            })
+          })
+        }
+      }
+      else{        
+        return
+      }
+      // Refresh page
+      // location.reload();
+    },
+    // Get Data From Firestore Database
+    getDataFirebase(userUId) {
+      if(userUId){
+        const q=query(collection(db, "todos"), where('user_uid', '==', userUId))
+        onSnapshot(q, (querySnapshot) => {
+          const todos=[];
+          querySnapshot.forEach((doc) => {
+            let item= doc.data();
+            const todo= {
+              task_id: doc.id,
+              task_title: item.title,
+              task_desciption: item.description,
+              task_title_color: item.title_color,
+              task_background_color: item.bg_color,
+              task_description_color: item.des_color,
+              status: item.status,
+            }
+            todos.push(todo)
+          });
+          this.taskItems= todos
+        })
+      }
+      
+    },
+    //End--- Get Data From Firestore Database
+
+    // Login Firebase Auth
     async login(data){
       const {email, password}= data;
       try {
@@ -238,9 +271,10 @@ export default {
       this.setUser(auth.currentUser);
       this.toggle_login_register= false;
     },
-    
+    //End--- Login Firebase Auth
+
+    // Register Firebase Auth
     async register(data){
-      console.log(data);
       const {email, password, name }= data;
       try {
         await createUserWithEmailAndPassword(auth, email, password)
@@ -272,24 +306,32 @@ export default {
         console.log('Something went wrong');
         return
       }
-      console.log('auth.currentUser');
-      console.log(auth.currentUser);
       this.setUser(auth.currentUser)
       this.toggle_login_register= false;
     },
+    //End--- Register Firebase Auth
+
+    //Logout Firebase Auth
     async logout() {
       await signOut(auth);
       this.clearUser();
     },
-    
+    //End--- Logout Firebase Auth
+
+    //SetUser 
     setUser(user) {
       this.user= user;
     },
+    //End--- SetUser 
+
+    // ClearUser 
     clearUser() {
       this.user= null;
-      // this.fetchUser;
       this.taskItems= null;
-    },    
+    }, 
+    //End--- ClearUser 
+    
+    //End--- selectActiveTab
     selectActiveTab(tab) {     
       this.selectedTab={
         todo: false,
@@ -304,16 +346,21 @@ export default {
         this.selectedTab.done= true;
       }
     },
+    //End--- selectActiveTab    
     dataItems(status) {
       if(this.taskItems){
         return this.taskItems.filter((item) => item.status == status)
       }
     },
+    //--- startDrag
     startDrag(evt, item, index) {      
       evt.dataTransfer.dropEffect = 'move'
       evt.dataTransfer.effectAllowed = 'move'
       evt.dataTransfer.setData('itemID', item.task_id)
     },
+    //End--- startDrag
+
+    //--- onDrop
     onDrop(evt, list) {
       const itemID = evt.dataTransfer.getData('itemID')
       let item = null;
@@ -329,68 +376,47 @@ export default {
       }
       this.updateTask(item, indexItem)
     },
+    //End--- onDrop
 
     // Adding tasks to the list    
     addTask(newTask) {
-      const currentDate = new Date();
-      this.taskItems.push({ 
-        task_id: newTask.task_id,
-        task_title: newTask.task_title,
-        task_desciption: newTask.task_desciption,
-        task_title_color: newTask.task_title_color,
-        task_background_color: newTask.task_background_color,
-        task_description_color: newTask.task_description_color,
-        // Get Date with format dd--mm--yy
-        date: `${currentDate.getDate()}/
-        ${currentDate.getMonth() + 1}/
-        ${currentDate.getFullYear()}`, 
-        // Get time format O:M
-        time: `${currentDate.getHours()}:
-        ${currentDate.getMinutes()}`,
+      // const currentDate = new Date();
+      const docRef =addDoc(collection(db, "todos"), {
+        title: newTask.task_title,
+        description: newTask.task_desciption,
+        title_color: newTask.task_title_color,
+        bg_color: newTask.task_background_color,
+        des_color: newTask.task_description_color,
         status: newTask.status,
+        user_uid: this.user.uid
       });
-      localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
       this.modal_add_task = !this.modal_add_task;
       this.$toast.open({ 
         message: 'Your task added', 
         type: 'success', 
         position: 'bottom' 
-      });
-      localStorage.setItem('laset-ID', newTask.task_id);
+      });      
     },
-    // Deleting tasks 
-    deleteTask(index) {
-      if (window.confirm('Are you sure to delete this task?')) {
-        this.taskItems.splice(index, 1);
-        localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
-      }
-      else{
-        console.log('Discard');
-        console.log(index);
-      }      
-    },
+
+   
     
     showModalUpdateTask(task) {
       this.update_task_item= task;
       this.modal_add_task = !this.modal_add_task;    
     },
-    updateTask(task, index) {
-      this.taskItems[index] = task;
-      localStorage.setItem('todo-List', JSON.stringify(this.taskItems));
+    updateTask(task) {
+      const todoDoc = doc(db, "todos", task.task_id);
+      updateDoc(todoDoc, {
+        title: task.task_title,
+        description: task.task_desciption,
+        title_color: task.task_title_color,
+        bg_color: task.task_background_color,
+        des_color: task.task_description_color,
+        status: task.status,
+      });
       this.closeModal();
-      this.taskItems= this.getTaskItems();
     },
-    // Init data
-    getTaskItems() {
-      const data = localStorage.getItem('todo-List');
-      return JSON.parse(data) || [];
-    },
-    clearHistory() {
-      // Clear LocalStorage
-      localStorage.clear();
-      // Refresh page
-      location.reload();
-    },
+   
     closeModal() {
       this.update_task_item= null;
       this.modal_add_task = false;

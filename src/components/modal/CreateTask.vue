@@ -82,8 +82,6 @@ export default {
                 task_title_color:'#000000',
                 task_background_color:'#cccccc',
                 task_description_color:'#000000',
-                date: null,
-                time: null,
                 status: 1,
             },
             action_button: 'Create New Task' ,
@@ -96,18 +94,11 @@ export default {
             }          
         }
     },
-    mounted() {
-        // Set Last Id for creat new task
-        if(localStorage.getItem('laset-ID')) {
-            this.lasetID= localStorage.getItem('laset-ID')
-        }else{
-            this.lasetID=0
-        }
-        // Value of action button--- Create and Update
+    mounted() {        
         if(this.update_task_item != null) {
             this.action_button= 'Update Task'
-            this.newTask= this.update_task_item.task;
-            this.header_title= 'Update  '+this.update_task_item.task.task_title;
+            this.newTask= this.update_task_item;
+            this.header_title= 'Update  '+this.update_task_item.task_title;
         }else {
             this.action_button= 'Create New Task';
             this.header_title= 'Create New Task';
@@ -124,11 +115,10 @@ export default {
                     position: 'bottom' 
                     }); 
                 }else {
-                    this.newTask.task_id=parseInt(this.lasetID)+1;
                     this.$parent.addTask(this.newTask);
                 }
             }else {
-                this.$parent.updateTask(this.newTask, this.update_task_item.index);
+                this.$parent.updateTask(this.newTask);
             }
 
         }
