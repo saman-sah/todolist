@@ -28,13 +28,16 @@
     <!-- Tabs for Mobile version -->
     <div class="tabs-header-mobile" v-if="mobile_version">
       <ul class="nav">
-        <li class="nav-item" @click="selectActiveTab('todo')">
+        <li :class="[ 'nav-item', selectedTab.todo ? 'active'  :'']"
+         @click="selectActiveTab('todo')">
           To Do
         </li>
-        <li class="nav-item" @click="selectActiveTab('inprogress')">
+        <li :class="[ 'nav-item', selectedTab.inprogress ? 'active'  :'']"
+        @click="selectActiveTab('inprogress')">
           In progress
         </li>
-        <li class="nav-item" @click="selectActiveTab('done')">
+        <li :class="[ 'nav-item', selectedTab.done ? 'active'  :'']"
+        @click="selectActiveTab('done')">
           Done
         </li>
       </ul>
@@ -142,7 +145,7 @@ export default {
         inprogress: true,
         done: true
       },
-      user: null,
+      user: null,      
     }
   },
   props: [
@@ -186,6 +189,7 @@ export default {
         }else {
           this.setUser(user);
            this.getDataFirebase(user.uid);
+           console.log(user.uid);
         }
       })
     }
@@ -224,23 +228,25 @@ export default {
     getDataFirebase(userUId) {
       if(userUId){
         const q=query(collection(db, "todos"), where('user_uid', '==', userUId))
-        onSnapshot(q, (querySnapshot) => {
-          const todos=[];
-          querySnapshot.forEach((doc) => {
-            let item= doc.data();
-            const todo= {
-              task_id: doc.id,
-              task_title: item.title,
-              task_desciption: item.description,
-              task_title_color: item.title_color,
-              task_background_color: item.bg_color,
-              task_description_color: item.des_color,
-              status: item.status,
-            }
-            todos.push(todo)
-          });
-          this.taskItems= todos
-        })
+        if(q) {
+          onSnapshot(q, (querySnapshot) => {
+            const todos=[];
+            querySnapshot.forEach((doc) => {
+              let item= doc.data();
+              const todo= {
+                task_id: doc.id,
+                task_title: item.title,
+                task_desciption: item.description,
+                task_title_color: item.title_color,
+                task_background_color: item.bg_color,
+                task_description_color: item.des_color,
+                status: item.status,
+              }
+              todos.push(todo)
+            });
+            this.taskItems= todos
+          })
+        }
       }
       
     },
@@ -378,7 +384,8 @@ export default {
 
     // Adding tasks to the list    
     addTask(newTask) {
-      // const currentDate = new Date();
+      console.log('newTask');
+      console.log(newTask);
       const docRef =addDoc(collection(db, "todos"), {
         title: newTask.task_title,
         description: newTask.task_desciption,
@@ -430,5 +437,8 @@ export default {
     display: flex;
     flex-direction: column;
     margin-top: 300px;
+}
+.active{
+  border: 2px solid #ccc;
 }
 </style>

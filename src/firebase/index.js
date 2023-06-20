@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "",
-  authDomain: "to-do-list-ba8d8.firebaseapp.com",
-  projectId: "to-do-list-ba8d8",
-  storageBucket: "to-do-list-ba8d8.appspot.com",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCo8sTvBcwoSqoFcrYg1IjjFhXrVnGT5XA",
+  authDomain: "new-todo-list-8f871.firebaseapp.com",
+  projectId: "new-todo-list-8f871",
+  storageBucket: "new-todo-list-8f871.appspot.com",
+  messagingSenderId: "233679999665",
+  appId: "1:233679999665:web:da5c8ef69e91f108da0890"
 };
 
 
